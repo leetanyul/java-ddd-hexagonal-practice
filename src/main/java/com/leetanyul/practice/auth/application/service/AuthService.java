@@ -17,6 +17,6 @@ public class AuthService {
         Account account = loadAccountPort.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("계정을 찾을 수 없습니다: " + email));
 
-        return jwtTokenProvider.createToken(email, account.isAdmin());
+        return jwtTokenProvider.createToken(account.getId(), email, account.isAdmin());
     }
 }

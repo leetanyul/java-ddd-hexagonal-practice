@@ -6,3 +6,5 @@ INSERT INTO boards (id, title, content, creator_id) VALUES (3, 'title 3', '내�
 INSERT INTO boards (id, title, content, creator_id) VALUES (4, 'title 4', '내용입니다. 4', 1);
 INSERT INTO boards (id, title, content, creator_id) VALUES (5, 'title 5', '내용입니다. 4', 2);
 INSERT INTO boards (id, title, content, creator_id) VALUES (6, 'title 6', '내용입니다. 5', 1);
+ALTER TABLE boards ALTER COLUMN id RESTART WITH 7;
+ALTER TABLE accounts ALTER COLUMN id RESTART WITH 3;

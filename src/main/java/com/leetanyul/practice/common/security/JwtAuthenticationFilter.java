@@ -29,7 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (token != null) {
             try {
                 if (jwtTokenProvider.validateToken(token)) {
-                    String username = jwtTokenProvider.getUsername(token);
+                    String username = jwtTokenProvider.getEmail(token);
                     boolean isAdmin = jwtTokenProvider.isAdmin(token);
 
                     List<GrantedAuthority> authorities = isAdmin

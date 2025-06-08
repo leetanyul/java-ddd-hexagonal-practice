@@ -42,7 +42,7 @@ class AccountControllerTest {
 
     @BeforeEach
     void setup() {
-        JWT_TOKEN = "Bearer " + jwtTokenProvider.createToken("leetanyul@example.com", true);
+        JWT_TOKEN = "Bearer " + jwtTokenProvider.createToken(new AccountId(1L),"leetanyul@example.com", true);
     }
 
     @Test

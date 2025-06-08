@@ -57,7 +57,7 @@ class BoardControllerTest {
 
     @BeforeEach
     void setup() {
-        JWT_TOKEN = "Bearer " + jwtTokenProvider.createToken("leetanyul@example.com", true);
+        JWT_TOKEN = "Bearer " + jwtTokenProvider.createToken(new AccountId(1L),"leetanyul@example.com", true);
     }
 
     @Test
@@ -81,7 +81,7 @@ class BoardControllerTest {
     @Test
     @DisplayName("게시물 생성 성공")
     void createBoard_success() throws Exception {
-        BoardController.CreateBoardRequest request = new BoardController.CreateBoardRequest("새 제목", "새 내용", 100L);
+        BoardController.CreateBoardRequest request = new BoardController.CreateBoardRequest("새 제목", "새 내용");
 
         when(createBoardUseCase.createBoard(any(CreateBoardCommand.class)))
                 .thenReturn(new BoardId(1L));

@@ -1,5 +1,6 @@
 package com.leetanyul.practice.auth.domain;
 
+import com.leetanyul.practice.account.domain.AccountId;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
@@ -19,9 +20,10 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    public String createToken(String email, boolean isAdmin) {
+    public String createToken(AccountId accountId, String email, boolean isAdmin) {
         Claims claims = Jwts.claims().setSubject(email);
         claims.put("isAdmin", isAdmin);
+        claims.put("accountId", accountId.getValue());
 
         Date now = new Date();
         Date expiry = new Date(now.getTime() + validityInMs);
@@ -34,12 +36,17 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getUsername(String token) {
+    public String getEmail(String token) {
         return getClaims(token).getSubject();
     }
 
     public boolean isAdmin(String token) {
         return Boolean.TRUE.equals(getClaims(token).get("isAdmin", Boolean.class));
+    }
+
+    public AccountId getAccountId(String token) {
+        Long id = getClaims(token).get("accountId", Long.class);
+        return new AccountId(id);
     }
 
     public boolean validateToken(String token) {

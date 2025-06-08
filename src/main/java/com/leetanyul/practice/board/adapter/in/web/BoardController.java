@@ -1,6 +1,8 @@
 package com.leetanyul.practice.board.adapter.in.web;
 
+import com.leetanyul.practice.account.domain.Account;
 import com.leetanyul.practice.account.domain.AccountId;
+import com.leetanyul.practice.auth.domain.JwtTokenProvider;
 import com.leetanyul.practice.board.application.port.in.CreateBoardCommand;
 import com.leetanyul.practice.board.application.port.in.CreateBoardUseCase;
 import com.leetanyul.practice.board.application.port.in.GetBoardUseCase;
@@ -9,6 +11,7 @@ import com.leetanyul.practice.board.domain.Board;
 import com.leetanyul.practice.board.domain.BoardId;
 import com.leetanyul.practice.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +26,7 @@ public class BoardController {
     private final GetBoardUseCase getBoardUseCase;
     private final CreateBoardUseCase createBoardUseCase;
     private final GetBoardsByCreatorUseCase getBoardsByCreatorUseCase;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<Board>> getBoard(@PathVariable Long id) {
@@ -37,15 +41,23 @@ public class BoardController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<String>> createBoard(@RequestBody CreateBoardRequest request) {
+    public ResponseEntity<ApiResponse<String>> createBoard(
+            @RequestBody CreateBoardRequest request,
+            @RequestHeader("Authorization") String authHeader) {
+
+        String token = authHeader.replace("Bearer ", "");
+        AccountId accountId = jwtTokenProvider.getAccountId(token);
+
         CreateBoardCommand command = new CreateBoardCommand(
                 request.title(),
                 request.content(),
-                new AccountId(request.creatorId())
+                accountId
         );
+
         BoardId boardId = createBoardUseCase.createBoard(command);
         return ResponseEntity.ok(ApiResponse.success("게시물 생성됨 ID: " + boardId.getValue()));
     }
+
 
     @GetMapping("/creator-id/{accountId}")
     public ResponseEntity<ApiResponse<List<BoardResponse>>> getBoardsByCreator(@PathVariable Long accountId) {
@@ -56,7 +68,7 @@ public class BoardController {
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
 
-    public record CreateBoardRequest(String title, String content, long creatorId) {
+    public record CreateBoardRequest(String title, String content) {
     }
 
     public record BoardResponse(Long id, String title, String content) {
